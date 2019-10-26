@@ -35,9 +35,6 @@ def load_data(data_dir):
     testloader = torch.utils.data.DataLoader(test_dataset, batch_size=32 ,shuffle=False)
     validloader = torch.utils.data.DataLoader(valid_dataset, batch_size=32 ,shuffle=True)
 
-    with open('cat_to_name.json', 'r') as f:
-        cat_to_name = json.load(f)
-
     return trainloader, validloader, testloader, train_dataset
 
 

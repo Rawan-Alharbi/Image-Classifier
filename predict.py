@@ -8,6 +8,7 @@ def get_args():
     parser.add_argument("--top_k", help= "top k classes of image", default=5, type=int)
     parser.add_argument("--category_names", help="category names of top k classes", action="store_true")
     parser.add_argument("--gpu", help="use gpu for inference", action="store_true")
+    parser.add_argument("--cat_path", help ="Path to the category names file", default="cat_to_name.json", type=str)
     
     args = parser.parse_args()
     
@@ -22,7 +23,7 @@ def main():
     prob, label = predict(args.image_path, model, args.top_k, args.gpu)
     print("predeicted categories are: ", label, " with probabilities ", prob, ", respectivly")
     if args.category_names:
-        cat_names = sanity_check(prob, label)
+        cat_names = sanity_check(prob, label, args.cat_path)
         print("category names: ", cat_names)   
 
      

@@ -9,7 +9,7 @@ def get_args():
     parser = argparse.ArgumentParser(description= "Train neural network to classify images")
     parser.add_argument("data_dir", help = "path to the data", type = str)
     parser.add_argument("--save_dir", help = "directory to save the data", default= "checkpoint.pth", type = str)
-    parser.add_argument("--arch", help = "neural network architecture", default= "vgg16", type =str)
+    parser.add_argument("--arch", help = "neural network architecture", choices=['vgg16', 'vgg1'], default= "vgg16")
     parser.add_argument("--learning_rate", "-lr", help = "learning rate of the network", default=0.001, type = float)
     parser.add_argument("--hidden_units", help = "number of hidden units in network", default=512, type = int)
     parser.add_argument("--epochs", help = "number of epochs", default=10, type = int)
@@ -28,7 +28,7 @@ def main():
     model, optimizer, criterion = build_model(args.arch, args.learning_rate, args.hidden_units, args.gpu)
     train_model(model, optimizer, criterion, trainloader, validloader, args.epochs, args.gpu)
     test_model(model, testloader, args.gpu)
-    save_checkpoint(model, optimizer, train_dataset, args.save_dir, args.epochs, args.arch)
+    save_checkpoint(model, optimizer, train_dataset, args.save_dir, args.epochs, args.arch, args.hidden_units, args.learning_rate)
 
     
    

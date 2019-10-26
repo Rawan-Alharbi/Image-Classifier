@@ -12,7 +12,7 @@ def build_model(archs, learning_rate, hidden_units, gpu):
     elif archs == "vgg11":
         model = models.vgg11(pretrained=True)
     else:
-        print("please chose either vgg16 or densenet161")
+        print("please choose either vgg16 or vgg11")
 
     # Freeze parameters so we don't backprop through them
     for param in model.parameters():
@@ -32,7 +32,7 @@ def build_model(archs, learning_rate, hidden_units, gpu):
 
     optimizer = optim.Adam(model.classifier.parameters(), lr = learning_rate)
 
-    device = torch.device("cuda" if gpu==True else "cpu")
+    device = torch.device("cuda" if gpu and torch.cuda.is_available() else "cpu")
 
     return model, optimizer, criterion
 
@@ -42,14 +42,14 @@ def train_model(model, optimizer, criterion, trainloader, validloader, epochs, g
     running_loss = 0
     print_every = 40
     
-    device = torch.device("cuda" if gpu==True else "cpu")
+    device = torch.device("cuda" if gpu and torch.cuda.is_available() else "cpu")
     model.to(device)
 
 
     for epoch in range(epochs):
         for images, labels in trainloader:
             steps += 1
-            device = torch.device("cuda" if gpu==True else "cpu")
+            device = torch.device("cuda" if gpu and torch.cuda.is_available() else "cpu")
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
@@ -90,7 +90,7 @@ def train_model(model, optimizer, criterion, trainloader, validloader, epochs, g
 def test_model(model, testloader, gpu):
     correct = 0
     total = 0
-    device = torch.device("cuda" if gpu==True else "cpu")
+    device = torch.device("cuda" if gpu and torch.cuda.is_available() else "cpu")
     model.to(device)
 
 
@@ -109,18 +109,18 @@ def test_model(model, testloader, gpu):
 
     
     
-def save_checkpoint(model, optimizer,train_dataset, save_dir, epochs, arch):
+def save_checkpoint(model, optimizer, train_dataset, save_dir, epochs, arch, hidden_units, lr, dropout=0.2):
     model.class_to_idx = train_dataset.class_to_idx
 
-    checkpoint = {'model': model,
-                  'model_state_dict': model.state_dict(),
+    checkpoint = {'model_state_dict': model.state_dict(),
                   'classifier': model.classifier,
                   'class_to_idx': model.class_to_idx,
-                  'optimizer': optimizer,
                   'optimizer_state_dict': optimizer.state_dict(),
                   'epoch': epochs,
-                  'arch': arch}
+                  'arch': arch,
+                  'learning_rate': lr,
+                  'dropout': dropout,
+                  'hidden_units': hidden_units}
 
     torch.save(checkpoint, save_dir)
  
-
